@@ -1,36 +1,42 @@
 package com.example.simpleapp.service;
 
 import com.example.simpleapp.model.ToDo;
-import com.example.simpleapp.repository.ToDoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @Service
 public class ToDoServiceImpl implements ToDoService {
 
-    @Autowired
-    private ToDoRepository toDoRepository;
+    Map<String, ToDo> toDoList = new HashMap<>();
 
     @Override
     public List<ToDo> getAllTodos() {
-        return toDoRepository.findAll();
+
+        return new ArrayList<>(toDoList.values());
     }
 
     @Override
     public ToDo getToDoById(String id) {
-        Optional<ToDo> optionalToDo = toDoRepository.findById(id);
-        return optionalToDo.orElse(null);
+
+        return toDoList.get(id);
     }
 
     @Override
     public ToDo addOrUpdateToDo(ToDo todo) {
-        return toDoRepository.save(todo);
+
+        if(todo.getId()==null) {
+            todo.setId(String.valueOf(toDoList.size() + 1));
+            toDoList.put(todo.getId(), todo);
+        } else {
+            toDoList.put(todo.getId(), todo);
+        }
+        return todo;
     }
 
     @Override
     public void deleteToDoById(String id) {
-        toDoRepository.deleteById(id);
+
+        toDoList.remove(id);
     }
 }
